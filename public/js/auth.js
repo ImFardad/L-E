@@ -1,107 +1,144 @@
 // public/js/auth.js
+
+// ===== UTILS =====
+async function requestWithSpinner({ url, options, btn, spinner }) {
+  // فعال‌سازی Spinner
+  btn.disabled = true;
+  spinner.classList.remove('hidden');
+
+  try {
+    const res = await fetch(url, { credentials: 'same-origin', ...options });
+    const data = await res.json();
+    return data;
+  } finally {
+    // غیرفعال‌سازی Spinner
+    spinner.classList.add('hidden');
+    btn.disabled = false;
+  }
+}
+
+// ===== SIGNUP =====
 let isCodeSent = false;
+const signupForm = document.getElementById('signup-form');
+if (signupForm) {
+  const sendBtn    = document.getElementById('send-code-btn');
+  const sendSpin   = document.getElementById('send-spinner');
+  const verifySec  = document.getElementById('verify-section');
+  const verifyBtn  = document.getElementById('verify-btn');
+  const verifySpin = document.getElementById('verify-spinner');
+  const errSign    = document.getElementById('signup-error');
+  const errVer     = document.getElementById('verify-error');
 
-const formSign = document.getElementById('signup-form');
-const btnSend  = document.getElementById('send-code-btn');
-const errSign  = document.getElementById('signup-error');
-const verSect  = document.getElementById('verify-section');
-const btnVer   = document.getElementById('verify-btn');
-const errVer   = document.getElementById('verify-error');
+  // Send or Resend Code
+  sendBtn.addEventListener('click', async () => {
+    errSign.textContent = '';
 
-btnSend.addEventListener('click', async () => {
-  errSign.textContent = '';
-  const fd = new FormData(formSign);
-
-  // مرحلهٔ اول: Send Code
-  if (!isCodeSent) {
-    if (fd.get('password') !== fd.get('confirmPassword')) {
-      return errSign.textContent = 'Passwords do not match';
-    }
-    // درخواست Send Code
-    const res = await fetch('/api/signup', {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({
+    const fd = new FormData(signupForm);
+    // مرحله اول: Send Code
+    if (!isCodeSent) {
+      if (fd.get('password') !== fd.get('confirmPassword')) {
+        errSign.textContent = 'Passwords do not match';
+        return;
+      }
+      const payload = {
         firstName: fd.get('firstName'),
         lastName:  fd.get('lastName'),
         phone:     fd.get('phone'),
         email:     fd.get('email'),
         password:  fd.get('password')
-      })
-    });
-    const data = await res.json();
-    if (data.status === 'code-sent') {
-      isCodeSent = true;
-      // غیرفعال + خاکستری کردن فیلدها (به جز کد)
-      formSign.querySelectorAll('input').forEach(i => {
-        if (i.id !== 'code') {
-          i.disabled = true;
-          i.style.backgroundColor = '#33415588';
-        }
+      };
+      const data = await requestWithSpinner({
+        url: '/api/signup',
+        options: {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        },
+        btn: sendBtn, spinner: sendSpin
       });
-      verSect.classList.remove('hidden');
-      btnSend.textContent = 'Resend Code';
+      if (data.status === 'code-sent') {
+        isCodeSent = true;
+        // قفل + خاکستری
+        signupForm.querySelectorAll('input').forEach(i => {
+          if (i.id !== 'code') {
+            i.disabled = true;
+            i.classList.add('opacity-50');
+          }
+        });
+        verifySec.classList.remove('hidden');
+        sendBtn.textContent = 'Resend Code';
+      } else {
+        errSign.textContent = data.error || 'Signup failed';
+      }
+
+    // مرحله Resend
     } else {
-      errSign.textContent = data.error || 'Signup failed';
+      const data = await requestWithSpinner({
+        url: '/api/signup',
+        options: {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ phone: signupForm.phone.value })
+        },
+        btn: sendBtn, spinner: sendSpin
+      });
+      if (data.status === 'code-sent') {
+        errSign.textContent = 'A new code has been sent.';
+      } else {
+        errSign.textContent = data.error || 'Resend failed';
+      }
     }
-    return;
-  }
-
-  // مرحلهٔ Resend Code
-  const phone = formSign.phone.value;
-  const res2 = await fetch('/api/signup', {
-    method: 'POST',
-    headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ phone })
   });
-  const data2 = await res2.json();
-  if (data2.status === 'code-sent') {
-    errSign.textContent = 'A new code has been sent.';
-  } else {
-    errSign.textContent = data2.error || 'Resend failed';
-  }
-});
 
-btnVer.addEventListener('click', async () => {
-  errVer.textContent = '';
-  const code = document.getElementById('code').value.trim();
-  if (!code) return errVer.textContent = 'Enter verification code';
+  // Verify & Join
+  verifyBtn.addEventListener('click', async () => {
+    errVer.textContent = '';
+    const code = signupForm.code.value.trim();
+    if (!code) { errVer.textContent = 'Enter verification code'; return; }
 
-  const res = await fetch('/api/verify', {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ code })
-  });
-  const data = await res.json();
-  if (data.status === 'verified') {
-    window.location.href = '/';
-  } else {
-    errVer.textContent = data.error || 'Verification failed';
-  }
-});
-
-// LOGIN
-const formLog  = document.getElementById('login-form');
-const btnLog   = document.getElementById('login-btn');
-const errLog   = document.getElementById('login-error');
-
-if (btnLog) {
-  btnLog.addEventListener('click', async () => {
-    errLog.textContent = '';
-    const fd = new FormData(formLog);
-    const res = await fetch('/api/login', {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        phone: fd.get('phone'),
-        password: fd.get('password')
-      })
+    const data = await requestWithSpinner({
+      url: '/api/verify',
+      options: {
+        method: 'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ code })
+      },
+      btn: verifyBtn, spinner: verifySpin
     });
-    const data = await res.json();
+    if (data.status === 'verified') {
+      window.location.href = '/';
+    } else {
+      errVer.textContent = data.error || 'Verification failed';
+    }
+  });
+}
+
+// ===== LOGIN =====
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+  const loginBtn  = document.getElementById('login-btn');
+  const loginSpin = document.getElementById('login-spinner');
+  const errLogin  = document.getElementById('login-error');
+
+  loginBtn.addEventListener('click', async () => {
+    errLogin.textContent = '';
+    const fd = new FormData(loginForm);
+    const data = await requestWithSpinner({
+      url: '/api/login',
+      options: {
+        method: 'POST',
+        headers: { 'Content-Type':'application/json' },
+        body: JSON.stringify({
+          phone: fd.get('phone'),
+          password: fd.get('password')
+        })
+      },
+      btn: loginBtn, spinner: loginSpin
+    });
     if (data.status === 'ok') {
       window.location.href = '/';
     } else {
-      errLog.textContent = data.error || 'Login failed';
+      errLogin.textContent = data.error || 'Login failed';
     }
   });
 }

@@ -7,41 +7,42 @@
 
   <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- متغیرها و بک‌گراند -->
+  <!-- رنگ‌ها و پترن -->
   <link rel="stylesheet" href="css/styles.css"/>
+  <!-- FontAwesome برای Spinner -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  />
 </head>
-<body class="min-h-screen bg-primary text-primary relative">
+<body class="bg-primary text-primary relative">
 
-  <!-- پس‌زمینه‌ی گرید و رادیال -->
-  <div class="fixed inset-0 radial-bg grid-bg pointer-events-none"></div>
+  <!-- گرید + رادیکال پس‌زمینه -->
+  <div class="fixed inset-0 grid-bg radial-bg pointer-events-none"></div>
 
-  <!-- کارت فرم -->
+  <!-- کارت مرکزی -->
   <div class="relative z-10 flex items-center justify-center min-h-screen px-4">
     <div class="w-full max-w-md bg-secondary rounded-2xl p-8 shadow-lg">
       <h1 class="text-3xl font-semibold text-center text-accent-1 mb-6">Log In</h1>
 
       <form id="login-form" class="space-y-4" onsubmit="return false;">
         <input
-          name="phone"
-          type="tel"
-          placeholder="Phone Number"
+          name="phone" type="tel" placeholder="Phone Number"
           class="w-full bg-secondary border border-gray-700 rounded-lg px-4 py-3 placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-accent-1"
           required
         />
-
         <input
-          name="password"
-          type="password"
-          placeholder="Password"
+          name="password" type="password" placeholder="Password"
           class="w-full bg-secondary border border-gray-700 rounded-lg px-4 py-3 placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-accent-1"
           required
         />
 
         <button
           id="login-btn"
-          class="w-full bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] font-semibold rounded-lg py-3 shadow transition-transform active:translate-y-0 transform hover:-translate-y-1"
+          class="w-full bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] font-semibold rounded-lg py-3 flex items-center justify-center space-x-2"
         >
-          Log In
+          <i id="login-spinner" class="fas fa-spinner fa-spin hidden"></i>
+          <span>Log In</span>
         </button>
 
         <p id="login-error" class="text-sm text-[var(--accent-3)] text-center mt-2"></p>
