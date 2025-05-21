@@ -1,7 +1,7 @@
 // routes/session.routes.js
 const router = require('express').Router();
 const ctrl   = require('../controllers/sessionController');
-const auth   = require('../middleware/auth.middleware');  // ← اینجا مسیر رو اصلاح کردیم
+const auth   = require('../middlewares/auth.middleware');  // ← اینجا مسیر رو اصلاح کردیم
 
 router.use(auth);
 

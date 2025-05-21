@@ -26,30 +26,34 @@ app.use(session({
   saveUninitialized: false
 }));
 
-// --- Static Files ---
-app.use(express.static(path.join(__dirname, 'public')));
+// --- Authentication Middleware ---
+const requireAuth = (req, res, next) => {
+  if (req.session && req.session.userId) return next();
+  return res.redirect('/login');
+};
 
 // --- Routes ---
-// Authentication API
-app.use('/api', authRoutes);
-// Session & Stats API (protected by auth middleware inside)
-app.use('/api/sessions', sessionRoutes);
+// API Routes
+app.use('/api', authRoutes); // login, signup, logout
+app.use('/api/sessions', sessionRoutes); // stats, start/stop session, etc.
 
-// Root route → dashboard if logged in, else login page
-app.get('/', (req, res) => {
-  if (req.session.userId) {
-    return res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  }
-  return res.redirect('/login');
+// --- Page Routes ---
+app.get('/', requireAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
+
 app.get('/login', (req, res) => {
   if (req.session.userId) return res.redirect('/');
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
+
 app.get('/signup', (req, res) => {
   if (req.session.userId) return res.redirect('/');
   res.sendFile(path.join(__dirname, 'public', 'signup.html'));
 });
+
+// --- Static Files ---
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- Socket.IO Setup ---
 io.on('connection', socket => {
@@ -69,11 +73,12 @@ const originalCreate = SessionModel.create.bind(SessionModel);
 SessionModel.create = async function(values, options) {
   const s = await originalCreate(values, options);
   // Notify friends (this is placeholder; implement friend lookup logic)
-  // broadcastActivityToFriends(values.userId, { type:'start', ... });
+  // broadcastActivity(s.userId, { type:'start', sessionId: s.id });
   return s;
 };
 
 // --- Cron Jobs ---
+
 // 1. Every minute: enforce 16h max & auto-stop at midnight
 cron.schedule('*/1 * * * *', async () => {
   const now = new Date();
@@ -91,7 +96,7 @@ cron.schedule('*/1 * * * *', async () => {
     s.status      = 'closed';
     s.goalReached = s.timeGoal > 0 && (16 * 60) >= s.timeGoal;
     await s.save();
-    // broadcastActivity(s.userId, { type:'stop', sessionId:s.id });
+    // broadcastActivity(s.userId, { type:'stop', sessionId: s.id });
   }
 
   // Auto-stop at 23:59 for any open session crossing midnight
@@ -102,7 +107,7 @@ cron.schedule('*/1 * * * *', async () => {
       s.endTime = yesterdayEnd;
       s.status  = 'closed';
       await s.save();
-      // broadcastActivity(s.userId, { type:'stop', sessionId:s.id });
+      // broadcastActivity(s.userId, { type:'stop', sessionId: s.id });
     }
   }
 });
@@ -120,7 +125,7 @@ cron.schedule('0 1 * * *', async () => {
 (async () => {
   try {
     await db.authenticate();
-    await db.sync(); 
+    await db.sync();
     const PORT = process.env.PORT || 3000;
     server.listen(PORT, () => {
       console.log(`🚀 L-E Study running at http://localhost:${PORT}`);
