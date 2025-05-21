@@ -1,0 +1,24 @@
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  // چک کردن کاربر
+  fetch('/api/me')
+    .then(res => {
+      if (!res.ok) throw new Error('Not authorized');
+      return res.json();
+    })
+    .then(({ user }) => {
+      // اینجا اطلاعات user.firstName, lastName, friendCode و ... رو روی صفحه بذار
+    })
+    .catch(() => {
+      window.location.href = '/login.html';
+    });
+
+  // سوکت
+  const socket = io();
+  socket.on('connect', () => {
+    // به رومی با شناسه کاربر ملحق می‌شیم
+    fetch('/api/me')
+      .then(r => r.json())
+      .then(d => socket.emit('join-dashboard', { userId: d.user.id }));
+  });
+</script>

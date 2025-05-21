@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Log In | L‑E Study</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- متغیرها و بک‌گراند -->
+  <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body class="min-h-screen bg-primary text-primary relative">
+
+  <!-- پس‌زمینه‌ی گرید و رادیال -->
+  <div class="fixed inset-0 radial-bg grid-bg pointer-events-none"></div>
+
+  <!-- کارت فرم -->
+  <div class="relative z-10 flex items-center justify-center min-h-screen px-4">
+    <div class="w-full max-w-md bg-secondary rounded-2xl p-8 shadow-lg">
+      <h1 class="text-3xl font-semibold text-center text-accent-1 mb-6">Log In</h1>
+
+      <form id="login-form" class="space-y-4" onsubmit="return false;">
+        <input
+          name="phone"
+          type="tel"
+          placeholder="Phone Number"
+          class="w-full bg-secondary border border-gray-700 rounded-lg px-4 py-3 placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-accent-1"
+          required
+        />
+
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          class="w-full bg-secondary border border-gray-700 rounded-lg px-4 py-3 placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-accent-1"
+          required
+        />
+
+        <button
+          id="login-btn"
+          class="w-full bg-[var(--btn-bg)] hover:bg-[var(--btn-hover)] text-[var(--btn-text)] font-semibold rounded-lg py-3 shadow transition-transform active:translate-y-0 transform hover:-translate-y-1"
+        >
+          Log In
+        </button>
+
+        <p id="login-error" class="text-sm text-[var(--accent-3)] text-center mt-2"></p>
+
+        <p class="text-center text-secondary mt-6">
+          Don’t have an account?
+          <a href="/signup" class="text-accent-1 font-medium hover:underline">Sign up</a>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>

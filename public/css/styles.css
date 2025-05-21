@@ -1,0 +1,207 @@
+/* ========================================
+   Google Font
+   ======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ========================================
+   Root Variables (Colors & Buttons)
+   ======================================== */
+:root {
+  /* Backgrounds */
+  --bg-primary:   #0f172a;
+  --bg-secondary: #1e293b;
+
+  /* Accents */
+  --accent-1: #a5b4fc;  /* آبی روشن */
+  --accent-2: #86efac;  /* سبز روشن */
+  --accent-3: #fca5a5;  /* قرمز پاستلی (خطا) */
+  --accent-4: #fcd34d;  /* زرد روشن */
+
+  /* Text */
+  --text-primary:   #f8fafc;
+  --text-secondary: #94a3b8;
+
+  /* Buttons */
+  --btn-bg:    #A5F3FC; /* آبی پاستلی */
+  --btn-hover: #67E8F9; /* هاور آبی */
+  --btn-text:  #334155; /* تیره */
+}
+
+/* ========================================
+   Global Reset & Body
+   ======================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+
+  /* گرید ملایم */
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ========================================
+   Radial Accents
+   ======================================== */
+.radial-bg {
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(165,180,252,0.05) 0%, rgba(165,180,252,0.05) 90%),
+    radial-gradient(circle at 90% 80%, rgba(134,239,172,0.05) 0%, rgba(134,239,172,0.05) 90%);
+}
+
+/* ========================================
+   Utility Helpers
+   ======================================== */
+.text-primary   { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-accent-1  { color: var(--accent-1); }
+.text-accent-2  { color: var(--accent-2); }
+.text-accent-3  { color: var(--accent-3); }
+.text-accent-4  { color: var(--accent-4); }
+
+.bg-primary   { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.accent-1     { background-color: var(--accent-1); }
+.accent-2     { background-color: var(--accent-2); }
+.accent-3     { background-color: var(--accent-3); }
+.accent-4     { background-color: var(--accent-4); }
+
+/* ========================================
+   Form Container (Card)
+   ======================================== */
+.form-container {
+  position: relative;
+  z-index: 1;
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--bg-secondary);
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow:
+    0 10px 15px rgba(0,0,0,0.1),
+    0 4px 6px rgba(0,0,0,0.05);
+}
+
+/* Center helper for plain div if not using .form-container */
+.center-vertical {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* ========================================
+   Headings & Text
+   ======================================== */
+h1, .form-title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--accent-1);
+  margin-bottom: 1.5rem;
+}
+
+p {
+  line-height: 1.5;
+}
+
+/* ========================================
+   Inputs
+   ======================================== */
+.input-base {
+  width: 100%;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid #374151;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-base:focus {
+  outline: none;
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 3px rgba(165,180,252,0.5);
+}
+
+/* ========================================
+   Buttons
+   ======================================== */
+.study-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--btn-text);
+  background-color: var(--btn-bg);
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow:
+    0 4px 6px -1px rgba(0,0,0,0.1),
+    0 2px 4px -1px rgba(0,0,0,0.06);
+}
+
+.study-btn:hover {
+  background-color: var(--btn-hover);
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 15px -3px rgba(0,0,0,0.1),
+    0 4px 6px -2px rgba(0,0,0,0.05);
+}
+
+.study-btn:active {
+  transform: translateY(0);
+}
+
+/* ========================================
+   Error Text
+   ======================================== */
+.error-text {
+  font-size: 0.875rem;
+  color: var(--accent-3);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* ========================================
+   Links
+   ======================================== */
+a {
+  color: var(--accent-1);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ========================================
+   Responsive Adjustments
+   ======================================== */
+@media (max-height: 600px) {
+  .form-container {
+    top: 10%;
+    transform: translateY(0);
+  }
+}
