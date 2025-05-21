@@ -1,29 +1,44 @@
 // models/User.js
-const db = require('../config/db');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/db');
 
-class User {
-  static create({ firstName, lastName, phone, email, passwordHash, verificationCode }, cb) {
-    const sql = `INSERT INTO users
-      (firstName, lastName, phone, email, passwordHash, verificationCode)
-      VALUES (?, ?, ?, ?, ?, ?)`;
-    db.run(sql, [firstName, lastName, phone, email, passwordHash, verificationCode], function(err) {
-      cb(err, this?.lastID);
-    });
-  }
-
-  static findByPhone(phone, cb) {
-    db.get(`SELECT * FROM users WHERE phone = ?`, [phone], cb);
-  }
-
-  static verify(phone, friendCode, cb) {
-    db.run(`
-      UPDATE users
-      SET isVerified = 1, verificationCode = NULL, friendCode = ?
-      WHERE phone = ?
-    `, [friendCode, phone], cb);
-  }
-
-  // … بقیه متدهای لازم مثل findById یا updatePassword
-}
+const User = sequelize.define('User', {
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  phone: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  passwordHash: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  verificationCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  isVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  },
+  friendCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+}, {
+  tableName: 'users',
+  timestamps: false,
+});
 
 module.exports = User;
