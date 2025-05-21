@@ -1,27 +1,29 @@
 // config/db.js
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+const { Sequelize } = require('sequelize');
+const path         = require('path');
 
-const db = new sqlite3.Database(path.resolve(__dirname, '../data.sqlite'), err => {
-  if (err) console.error('DB connection error:', err);
-  else console.log('Connected to SQLite');
+// ساخت یک instance از Sequelize برای SQLite
+const db = new Sequelize({
+  dialect: 'sqlite',
+  storage: path.resolve(__dirname, '../data.sqlite'),
+  logging: false,         // برای غیرفعال کردن لاگ‌های SQL در کنسول
+  define: {
+    // اگر می‌خواهی فیلدهای createdAt/updatedAt را نداشته باشی
+    timestamps: false
+  }
 });
 
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      firstName TEXT NOT NULL,
-      lastName TEXT NOT NULL,
-      phone TEXT UNIQUE NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      passwordHash TEXT NOT NULL,
-      verificationCode TEXT,
-      isVerified INTEGER DEFAULT 0,
-      friendCode TEXT UNIQUE,
-      createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-    )
-  `);
-});
+// تابع کمکی برای اطمینان از اتصال
+async function connectDB() {
+  try {
+    await db.authenticate();
+    console.log('✅ Connected to SQLite via Sequelize');
+  } catch (err) {
+    console.error('❌ DB connection error:', err);
+    process.exit(1);
+  }
+}
+
+connectDB();
 
 module.exports = db;

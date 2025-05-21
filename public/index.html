@@ -1,29 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>StudyTrack | Minimal Study Tracker</title>
-  
-  <!-- Tailwind CSS -->
+  <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Font Awesome -->
-  <link 
-    rel="stylesheet" 
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-  >
-  <!-- Custom Styles (Pattern + Variables) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <!-- Embedded sample.css from your sample.html -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
     :root {
-      --bg-primary:   #0f172a;
+      --bg-primary: #0f172a;
       --bg-secondary: #1e293b;
       --accent-1: #a5b4fc;
       --accent-2: #86efac;
       --accent-3: #fca5a5;
       --accent-4: #fcd34d;
-      --text-primary:   #f8fafc;
+      --text-primary: #f8fafc;
       --text-secondary: #94a3b8;
     }
 
@@ -32,35 +28,73 @@
       background-color: var(--bg-primary);
       color: var(--text-primary);
       min-height: 100vh;
-      overflow-x: hidden;
-      background-image: 
-        radial-gradient(circle at 10% 20%, rgba(165,180,252,0.05) 0%, rgba(165,180,252,0.05) 90%),
-        radial-gradient(circle at 90% 80%, rgba(134,239,172,0.05) 0%, rgba(134,239,172,0.05) 90%);
+      background-image:
+        radial-gradient(circle at 10% 20%, rgba(165, 180, 252, 0.05) 0%, rgba(165, 180, 252, 0.05) 90%),
+        radial-gradient(circle at 90% 80%, rgba(134, 239, 172, 0.05) 0%, rgba(134, 239, 172, 0.05) 90%);
     }
 
     .grid-bg {
-      background-image: 
-        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
       background-size: 24px 24px;
     }
 
-    .hamburger { transition: all .3s ease; }
-    .hamburger.active .line:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-    .hamburger.active .line:nth-child(2) { opacity: 0; }
-    .hamburger.active .line:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+    .bg-primary { background-color: var(--bg-primary); }
+    .bg-secondary { background-color: var(--bg-secondary); }
+    .text-primary { color: var(--text-primary); }
+    .text-secondary { color: var(--text-secondary); }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 2rem;
+      height: 1.5rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .hamburger .line {
+      display: block;
+      width: 1.5rem;
+      height: 0.25rem;
+      background-color: #fff;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .hamburger.active .line:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .hamburger.active .line:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active .line:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
 
     .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 100%;
+      width: 16rem;
+      background-color: var(--bg-secondary);
+      box-shadow: 2px 0 6px rgba(0,0,0,0.3);
       transform: translateX(-100%);
-      transition: transform .3s ease;
+      transition: transform 0.3s ease;
       z-index: 50;
     }
-    .sidebar.open { transform: translateX(0); }
+    .sidebar.open {
+      transform: translateX(0);
+    }
 
     .overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
       opacity: 0;
       visibility: hidden;
-      transition: all .3s ease;
+      transition: all 0.3s ease;
+      z-index: 40;
     }
     .overlay.open {
       opacity: 1;
@@ -68,319 +102,206 @@
     }
 
     .study-btn {
-      transition: all .3s ease;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1),
-                  0 2px 4px -1px rgba(0,0,0,0.06);
+      background-image: linear-gradient(to right, var(--accent-1), var(--accent-2));
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
     .study-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1),
-                  0 4px 6px -2px rgba(0,0,0,0.05);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
     }
 
-    .nav-item { transition: all .2s ease; }
-    .nav-item:hover {
-      background-color: rgba(255,255,255,0.05);
-      transform: translateX(4px);
+    .card {
+      background-color: var(--bg-secondary);
+      padding: 1.25rem;
+      border-radius: 1rem;
+      border-left: 4px solid var(--accent-1);
+      transition: box-shadow 0.2s ease;
     }
-
-    .card { transition: all .3s ease; }
     .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1),
-                  0 10px 10px -5px rgba(0,0,0,0.04);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
     }
 
-    .accent-1 { background-color: var(--accent-1); }
-    .accent-2 { background-color: var(--accent-2); }
-    .accent-3 { background-color: var(--accent-3); }
-    .accent-4 { background-color: var(--accent-4); }
-
-    .bg-primary { background-color: var(--bg-primary); }
-    .bg-secondary { background-color: var(--bg-secondary); }
-    .text-primary { color: var(--text-primary); }
-    .text-secondary { color: var(--text-secondary); }
+    .notification {
+      position: fixed;
+      bottom: 1rem;
+      right: 1rem;
+      background: #DCFCE7;
+      color: #065F46;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      animation: fade-in 0.3s forwards;
+      z-index: 60;
+    }
+    .notification.fade-out {
+      animation: fade-out 0.3s forwards;
+    }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fade-out {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(10px); }
+    }
   </style>
 </head>
 <body class="grid-bg">
 
   <!-- Header -->
-  <header class="bg-secondary sticky top-0 z-40 shadow-md">
+  <header class="bg-primary sticky top-0 z-50">
     <div class="container mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center space-x-4">
         <!-- Hamburger Menu -->
-        <button id="menu-toggle"
-          class="hamburger flex flex-col justify-center items-center w-8 h-8 rounded-full hover:bg-gray-700 transition"
-        >
-          <span class="line block w-6 h-0.5 bg-white mb-1.5 transition"></span>
-          <span class="line block w-6 h-0.5 bg-white mb-1.5 transition"></span>
-          <span class="line block w-6 h-0.5 bg-white transition"></span>
+        <button id="menu-toggle" class="hamburger">
+          <span class="line"></span>
+          <span class="line"></span>
+          <span class="line"></span>
         </button>
         <!-- Logo -->
         <h1 class="text-xl font-bold">
           <span class="text-accent-1">Study</span><span class="text-accent-2">Track</span>
         </h1>
       </div>
-      <!-- Study Button -->
-      <button id="study-btn"
-        class="study-btn bg-gradient-to-r from-accent-1 to-accent-2 text-white px-4 py-2 rounded-full font-medium flex items-center"
-      >
+      <!-- Study Button (top-right) -->
+      <button id="study-btn" class="study-btn">
         <i class="fas fa-play mr-2"></i>
         <span>Start Studying</span>
       </button>
+      <div id="live-timers" class="flex items-center space-x-4 text-sm text-secondary">
+        <span id="elapsed">00:00:00</span>
+        <span id="remaining" class="opacity-60 hidden">00:00:00</span>
+      </div>
     </div>
   </header>
 
-  <!-- Sidebar Navigation -->
-  <aside class="sidebar fixed top-0 left-0 h-full w-64 bg-secondary shadow-lg">
-    <div class="p-4 h-full flex flex-col">
-      <!-- User Profile -->
-      <div class="flex items-center space-x-3 mb-8 p-3 rounded-lg bg-gray-800">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-accent-3 to-accent-4 flex items-center justify-center">
-          <span class="font-bold">JS</span>
-        </div>
-        <div>
-          <p class="font-medium"> </p>
-          <p class="text-xs text-secondary"> </p>
-        </div>
-      </div>
-      <!-- Navigation Items -->
-      <nav class="flex-1 overflow-auto">
-        <ul class="space-y-1">
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg bg-gray-800">
-              <i class="fas fa-home w-5 text-accent-1"></i>
-              <span>Dashboard</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg">
-              <i class="fas fa-calendar-alt w-5 text-accent-2"></i>
-              <span>Calendar</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg">
-              <i class="fas fa-chart-line w-5 text-accent-3"></i>
-              <span>Statistics</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg">
-              <i class="fas fa-stopwatch w-5 text-accent-4"></i>
-              <span>Timer</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg">
-              <i class="fas fa-users w-5 text-accent-1"></i>
-              <span>Friends</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg">
-              <i class="fas fa-trophy w-5 text-accent-2"></i>
-              <span>Competitions</span>
-            </a>
-          </li>
-          <li>
-            <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg">
-              <i class="fas fa-cog w-5 text-secondary"></i>
-              <span>Settings</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <!-- Footer -->
-      <div class="pt-4 border-t border-gray-700">
-        <p class="text-xs text-secondary text-center">StudyTrack v1.0</p>
-      </div>
-    </div>
+  <!-- Sidebar & Overlay -->
+  <aside class="sidebar">
+    <nav class="mt-10">
+      <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-secondary hover:bg-primary">
+        <i class="fas fa-home w-5 text-accent-1"></i><span>Dashboard</span>
+      </a>
+      <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-secondary hover:bg-primary">
+        <i class="fas fa-clock w-5 text-accent-2"></i><span>Sessions</span>
+      </a>
+      <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-secondary hover:bg-primary">
+        <i class="fas fa-chart-line w-5 text-accent-3"></i><span>Reports</span>
+      </a>
+      <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-secondary hover:bg-primary">
+        <i class="fas fa-users w-5 text-accent-4"></i><span>Friends</span>
+      </a>
+      <a href="#" class="nav-item flex items-center space-x-3 p-3 rounded-lg text-secondary hover:bg-primary">
+        <i class="fas fa-cog w-5 text-secondary"></i><span>Settings</span>
+      </a>
+    </nav>
   </aside>
-
-  <!-- Overlay -->
-  <div id="overlay" class="overlay fixed inset-0 bg-black bg-opacity-50 z-30"></div>
+  <div id="overlay" class="overlay"></div>
 
   <!-- Main Content -->
-  <main class="container mx-auto px-4 py-6 transition-all duration-300 ml-0 md:ml-64">
+  <main class="container mx-auto px-4 py-6">
     <!-- Today's Stats -->
-    <section class="mb-8">
-      <h2 class="text-xl font-semibold mb-4">Today's Progress</h2>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4"> 
-        <div class="card bg-secondary p-4 rounded-xl border-l-4 border-accent-1">
-          <p class="text-secondary text-sm">Hours Studied</p>
-          <p class="text-2xl font-bold"><!-- data --><span class="text-sm font-normal text-secondary">hrs</span></p>
-        </div>
-        <div class="card bg-secondary p-4 rounded-xl border-l-4 border-accent-2">
-          <p class="text-secondary text-sm">Sessions</p>
-          <p class="text-2xl font-bold"><!-- data --><span class="text-sm font-normal text-secondary">sessions</span></p>
-        </div>
-        <div class="card bg-secondary p-4 rounded-xl border-l-4 border-accent-3">
-          <p class="text-secondary text-sm">Focus Rate</p>
-          <p class="text-2xl font-bold"><!-- data --><span class="text-sm">%</span></p>
-        </div>
-        <div class="card bg-secondary p-4 rounded-xl border-l-4 border-accent-4">
-          <p class="text-secondary text-sm">Rank</p>
-          <p class="text-2xl font-bold"><!-- data --></p>
-        </div>
+    <section id="today-stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="card border-accent-1">
+        <h3 class="text-sm uppercase text-secondary">Hours Studied Today</h3>
+        <p id="today-hours" class="mt-2 text-3xl font-semibold">0h 0m</p>
+      </div>
+      <div class="card border-accent-2">
+        <h3 class="text-sm uppercase text-secondary">Sessions Today</h3>
+        <p id="today-sessions" class="mt-2 text-3xl font-semibold">0</p>
+      </div>
+      <div class="card border-accent-3">
+        <h3 class="text-sm uppercase text-secondary">This Week</h3>
+        <p id="week-hours" class="mt-2 text-3xl font-semibold">0h 0m</p>
+      </div>
+      <div class="card border-accent-4">
+        <h3 class="text-sm uppercase text-secondary">Best Day</h3>
+        <p id="best-day" class="mt-2 text-3xl font-semibold">—</p>
       </div>
     </section>
 
     <!-- Weekly Chart -->
-    <section class="mb-8">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">Weekly Progress</h2>
-        <select class="bg-secondary text-primary px-3 py-1 rounded-lg text-sm border border-gray-700">
-          <option>This Week</option>
-          <option>Last Week</option>
-          <option>Last Month</option>
-        </select>
-      </div>
-      <div class="card bg-secondary p-4 rounded-xl h-64">
-        <div class="flex items-end justify-between h-full">
-          <!-- 7 bars placeholder -->
-          <template x-for="i in 7">
-            <div class="flex flex-col items-center">
-              <div class="w-8 bg-accent-1 rounded-t-md" style="height:0%;"></div>
-              <span class="text-xs mt-1 text-secondary"> </span>
-            </div>
-          </template>
-        </div>
+    <section id="weekly-chart" class="mb-8">
+      <div class="card border-accent-1 p-6">
+        <h2 class="text-xl font-semibold mb-4">Weekly Progress</h2>
+        <canvas id="chart-canvas" height="100"></canvas>
       </div>
     </section>
 
     <!-- Recent Sessions -->
-    <section class="mb-8">
-      <h2 class="text-xl font-semibold mb-4">Recent Sessions</h2>
-      <div class="card bg-secondary rounded-xl overflow-hidden">
-        <div class="divide-y divide-gray-700">
-          <template x-for="s in 3">
-            <div class="p-4 hover:bg-gray-800 transition">
-              <div class="flex justify-between items-center">
-                <div>
-                  <p class="font-medium"> </p>
-                  <p class="text-sm text-secondary"> </p>
-                </div>
-                <div class="text-right">
-                  <p class="font-medium"> </p>
-                  <p class="text-xs text-secondary"> </p>
-                </div>
-              </div>
-            </div>
-          </template>
-        </div>
+    <section id="recent-sessions" class="mb-8">
+      <div class="card border-accent-2 p-6">
+        <h2 class="text-xl font-semibold mb-4">Recent Sessions</h2>
+        <ul id="sessions-list" class="space-y-3">
+          <!-- نمونه آیتم -->
+          <li class="flex justify-between">
+            <span>Math — 1h 30m</span>
+            <span class="text-secondary">May 20, 2025</span>
+          </li>
+        </ul>
       </div>
     </section>
 
     <!-- Friends Activity -->
-    <section>
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">Friends Activity</h2>
-        <button class="text-accent-1 text-sm font-medium">View All</button>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <template x-for="f in 3">
-          <div class="card bg-secondary p-4 rounded-xl">
-            <div class="flex items-center space-x-3 mb-3">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-r from-accent-3 to-accent-4 flex items-center justify-center">
-                <span class="font-bold"> </span>
-              </div>
+    <section id="friends-activity">
+      <div class="card border-accent-3 p-6">
+        <h2 class="text-xl font-semibold mb-4">Friends Activity</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- نمونه کارت دوست -->
+          <div class="p-4 bg-secondary rounded-lg">
+            <div class="flex items-center space-x-3">
+              <img src="https://i.pravatar.cc/40?img=3" alt="avatar" class="w-10 h-10 rounded-full"/>
               <div>
-                <p class="font-medium"> </p>
-                <p class="text-xs text-secondary">  hours today</p>
+                <p class="font-semibold">Sara</p>
+                <p class="text-sm text-secondary">Studied 2h today</p>
               </div>
-            </div>
-            <div class="flex justify-between text-sm">
-              <span class="text-secondary">Currently studying:</span>
-              <span class="font-medium"> </span>
             </div>
           </div>
-        </template>
+        </div>
       </div>
     </section>
   </main>
 
   <!-- Study Modal -->
-  <div id="study-modal" class="fixed inset-0 z-50 flex items-center justify-center hidden">
-    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
-    <div class="relative bg-secondary rounded-xl max-w-md w-full mx-4 p-6">
-      <button id="close-modal" class="absolute top-4 right-4 text-secondary hover:text-primary">
-        <i class="fas fa-times"></i>
-      </button>
-      <h2 class="text-xl font-bold mb-4">Track Study Session</h2>
-      <!-- Modal form placeholder -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Subject</label>
-        <select class="w-full bg-gray-800 text-primary rounded-lg px-3 py-2 border border-gray-700">
-          <option> </option>
-        </select>
-      </div>
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">Topic (optional)</label>
-        <input type="text" class="w-full bg-gray-800 text-primary rounded-lg px-3 py-2 border border-gray-700" placeholder="">
-      </div>
-      <div class="flex space-x-4">
-        <button id="start-study" class="flex-1 bg-gradient-to-r from-accent-1 to-accent-2 text-white px-4 py-2 rounded-lg font-medium">Start Session</button>
-        <button id="manual-entry" class="flex-1 bg-gray-800 text-primary px-4 py-2 rounded-lg font-medium border border-gray-700">Manual Entry</button>
-      </div>
+  <div id="study-modal" class="modal fixed inset-0 flex items-center justify-center hidden">
+    <div class="modal-content bg-secondary rounded-lg p-6 w-80 relative">
+        <button id="close-modal" class="absolute top-3 right-3 focus:outline-none text-white"><i class="fas fa-times"></i></button>
+        <h2 class="text-lg font-semibold mb-4 text-white">Track Study Session</h2>
+        <form id="session-form" class="space-y-4 text-white">
+        <div>
+            <label class="block mb-1">درس</label>
+            <select id="subject-select" class="w-full p-2 bg-secondary rounded">
+            ${SUBJECTS.map(s=>`<option value="${s.name}">${s.name}</option>`).join('')}
+            </select>
+            <input id="other-subject" type="text" placeholder="عنوان درس..." class="mt-2 p-2 bg-primary rounded w-full hidden"/>
+        </div>
+        <div>
+            <label class="block mb-1">Time Goal</label>
+            <div class="flex items-center space-x-2">
+            <button type="button" id="decrease-goal" class="p-2 bg-secondary rounded"><i class="fas fa-minus"></i></button>
+            <input id="goal-input" type="text" value="0:00" class="w-16 text-center bg-primary rounded"/>
+            <button type="button" id="increase-goal" class="p-2 bg-secondary rounded"><i class="fas fa-plus"></i></button>
+            </div>
+        </div>
+        <button type="submit" id="start-session-btn" class="w-full py-2 bg-gradient-to-r from-accent-1 to-accent-2 rounded-lg">Start</button>
+        </form>
     </div>
   </div>
 
-  <!-- Scripts -->
-  <script>
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar    = document.querySelector('.sidebar');
-    const overlay    = document.getElementById('overlay');
-    const studyBtn   = document.getElementById('study-btn');
-    const studyModal = document.getElementById('study-modal');
-    const closeModal = document.getElementById('close-modal');
-    const startStudy = document.getElementById('start-study');
-
-    menuToggle.addEventListener('click', () => {
-      menuToggle.classList.toggle('active');
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
-    });
-    overlay.addEventListener('click', () => {
-      menuToggle.classList.remove('active');
-      sidebar.classList.remove('open');
-      overlay.classList.remove('open');
-    });
-
-    studyBtn.addEventListener('click', () => {
-      studyModal.classList.remove('hidden');
-    });
-    closeModal.addEventListener('click', () => {
-      studyModal.classList.add('hidden');
-    });
-
-    let isStudying = false;
-    startStudy.addEventListener('click', () => {
-      if (!isStudying) {
-        isStudying = true;
-        studyBtn.innerHTML = '<i class="fas fa-stop mr-2"></i><span>Stop Studying</span>';
-        studyBtn.classList.replace('from-accent-1','from-accent-3');
-        studyBtn.classList.replace('to-accent-2','to-accent-4');
-        studyModal.classList.add('hidden');
-      } else {
-        isStudying = false;
-        studyBtn.innerHTML = '<i class="fas fa-play mr-2"></i><span>Start Studying</span>';
-        studyBtn.classList.replace('from-accent-3','from-accent-1');
-        studyBtn.classList.replace('to-accent-4','to-accent-2');
-      }
-    });
-
-    // Simple notification
-    function showNotification(msg) {
-      const n = document.createElement('div');
-      n.className = 'fixed bottom-4 right-4 bg-secondary text-primary px-4 py-2 rounded-lg shadow-lg flex items-center';
-      n.innerHTML = '<i class="fas fa-check-circle text-accent-2 mr-2"></i><span>' + msg + '</span>';
-      document.body.appendChild(n);
-      setTimeout(() => {
-        n.classList.add('opacity-0','transition-opacity','duration-300');
-        setTimeout(() => n.remove(), 300);
-      }, 3000);
-    }
-  </script>
+  <!-- Chart.js (global) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Modular JS -->
+  <script type="module" src="js/sidebar.js"></script>
+  <script type="module" src="js/notifications.js"></script>
+  <script type="module" src="js/study.js"></script>
+  <script type="module" src="js/cards.js"></script>
+  <script type="module" src="js/weeklyChart.js"></script>
 </body>
 </html>
